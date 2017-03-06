@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/naoina/toml"
+	"github.com/starchou/toml"
 )
 
 func BenchmarkUnmarshal(b *testing.B) {

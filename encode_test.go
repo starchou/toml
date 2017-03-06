@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/naoina/toml"
+	"github.com/starchou/toml"
 )
 
 func TestMarshal(t *testing.T) {

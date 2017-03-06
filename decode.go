@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/naoina/toml/ast"
+	"github.com/starchou/toml/ast"
 )
 
 const (
@@ -114,7 +114,8 @@ func UnmarshalTable(t *ast.Table, v interface{}) (err error) {
 		case *ast.KeyValue:
 			fv, fieldName, found := findField(rv, key)
 			if !found {
-				return fmt.Errorf("line %d: field corresponding to `%s' is not defined in `%T'", av.Line, key, v)
+				continue
+				// return fmt.Errorf("line %d: field corresponding to `%s' is not defined in `%T'", av.Line, key, v)
 			}
 			switch fv.Kind() {
 			case reflect.Map:
@@ -134,7 +135,8 @@ func UnmarshalTable(t *ast.Table, v interface{}) (err error) {
 		case *ast.Table:
 			fv, fieldName, found := findField(rv, key)
 			if !found {
-				return fmt.Errorf("line %d: field corresponding to `%s' is not defined in `%T'", av.Line, key, v)
+				continue
+				// return fmt.Errorf("line %d: field corresponding to `%s' is not defined in `%T'", av.Line, key, v)
 			}
 			if err, ok := setUnmarshaler(fv, string(av.Data)); ok {
 				if err != nil {
@@ -147,6 +149,10 @@ func UnmarshalTable(t *ast.Table, v interface{}) (err error) {
 				fv = fv.Elem()
 			}
 			switch fv.Kind() {
+			case reflect.Interface:
+				if err := UnmarshalTable(av, fv.Interface()); err != nil {
+					return err
+				}
 			case reflect.Struct:
 				vv := reflect.New(fv.Type()).Elem()
 				if err := UnmarshalTable(av, vv.Addr().Interface()); err != nil {
@@ -168,7 +174,8 @@ func UnmarshalTable(t *ast.Table, v interface{}) (err error) {
 		case []*ast.Table:
 			fv, fieldName, found := findField(rv, key)
 			if !found {
-				return fmt.Errorf("line %d: field corresponding to `%s' is not defined in `%T'", av[0].Line, key, v)
+				continue
+				// return fmt.Errorf("line %d: field corresponding to `%s' is not defined in `%T'", av[0].Line, key, v)
 			}
 			data := make([]string, 0, len(av))
 			for _, tbl := range av {
